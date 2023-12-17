@@ -1,0 +1,4 @@
+live.pi.local {
+    encode gzip
+    reverse_proxy owncast:8080
+}
