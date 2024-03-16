@@ -8,10 +8,10 @@ services:
       - "1080:1080"
       - "8080:8080"
     secrets:
-      - v2ray_config
-    command: ["run", "-c", "/run/secrets/v2ray_config"]
+      - v2ray_config.json
+    command: "run -c /run/secrets/v2ray_config.json"
     restart: always
 
 secrets:
-  v2ray_config:
+  v2ray_config.json:
     file: ./v2ray_config.json
