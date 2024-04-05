@@ -26,7 +26,6 @@ volumes:
   caddy_data:
   caddy_config:
 
-
 secrets:
   v2ray_config.json:
     file: ./v2ray_config.json
