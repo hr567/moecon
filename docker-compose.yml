@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   v2ray:
     container_name: v2ray
@@ -11,6 +9,23 @@ services:
       - v2ray_config.json
     command: "run -c /run/secrets/v2ray_config.json"
     restart: always
+
+  caddy:
+    container_name: caddy
+    image: caddy:alpine
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+      - ./:/srv:ro
+    ports:
+      - "80:80"
+    command: "caddy file-server -r /srv/www"
+    restart: always
+
+volumes:
+  caddy_data:
+  caddy_config:
+
 
 secrets:
   v2ray_config.json:

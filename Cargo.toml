@@ -21,7 +21,7 @@ web-sys = { version = "0.3.69", features = [
 crate-type = ["cdylib"]
 
 [profile.release]
+codegen-units = 1
 lto = true
 opt-level = "s"
 panic = "abort"
-codegen-units = 1
