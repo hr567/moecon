@@ -1,8 +1,9 @@
 <html>
 
 <head>
-    <title>Moecon Gamepad</title>
+    <title>Moecon</title>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
         body {
             position: absolute;
@@ -26,6 +27,16 @@
             await init();
         }
         run();
+    </script>
+    <script src="https://unpkg.com/oh-my-live2d@latest"></script>
+    <script>
+        OML2D.loadOml2d({
+            models: [
+                {
+                    path: 'https://cdn.jsdelivr.net/gh/Eikanya/Live2d-model/Live2D/Senko_Normals/senko.model3.json'
+                }
+            ]
+        });
     </script>
 </body>
 

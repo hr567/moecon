@@ -1,12 +1,15 @@
+use std::cell::RefCell;
 use std::fmt::{self, Display};
+use std::rc::Rc;
 
+use js_sys::Date;
 use rand::prelude::*;
 use wasm_bindgen::prelude::*;
 
 pub const CELL_SIZE: usize = 5;
 
 #[wasm_bindgen]
-pub fn render_universe(width: usize, height: usize) {
+pub fn render_universe(width: usize, height: usize, frame_per_second: u32) {
     let mut universe = Universe::new(width, height);
     universe.rand();
     let window = web_sys::window().unwrap_throw();
@@ -44,33 +47,43 @@ pub fn render_universe(width: usize, height: usize) {
         (universe.width() * CELL_SIZE) as f64,
         (universe.height() * CELL_SIZE) as f64,
     );
+
+    let mut timestamp = Date::now();
     // Draw the cells in initial universe
     draw_cells(&context, &universe, false);
-    // Start animation loop
-    window
-        .request_animation_frame(
-            Closure::once_into_js(move || {
-                render_loop(context, universe);
-            })
-            .as_ref()
-            .unchecked_ref(),
-        )
-        .expect_throw("failed to request animation frame");
-}
 
-fn render_loop(context: web_sys::CanvasRenderingContext2d, mut universe: Universe) {
-    universe.tick();
-    draw_cells(&context, &universe, true);
+    let f = Rc::new(RefCell::new(None));
+    let g = f.clone();
+
+    *g.borrow_mut() = Some(Closure::new(move || {
+        let now = Date::now();
+        timestamp = if now - timestamp > 1000.0 / frame_per_second as f64 {
+            universe.tick();
+            draw_cells(&context, &universe, true);
+            now
+        } else {
+            timestamp
+        };
+        web_sys::window()
+            .unwrap_throw()
+            .request_animation_frame_closure(f.borrow().as_ref().unwrap_throw());
+    }));
+
+    // Start animation loop
     web_sys::window()
         .unwrap_throw()
-        .request_animation_frame(
-            Closure::once_into_js(move || {
-                render_loop(context, universe);
-            })
-            .as_ref()
-            .unchecked_ref(),
-        )
-        .expect_throw("failed to request animation frame");
+        .request_animation_frame_closure(g.borrow().as_ref().unwrap_throw());
+}
+
+trait RequestAnimationFrameClosure {
+    fn request_animation_frame_closure(&self, f: &Closure<dyn FnMut()>);
+}
+
+impl RequestAnimationFrameClosure for web_sys::Window {
+    fn request_animation_frame_closure(&self, f: &Closure<dyn FnMut()>) {
+        self.request_animation_frame(f.as_ref().unchecked_ref())
+            .expect_throw("failed to request animation frame");
+    }
 }
 
 fn draw_cells(context: &web_sys::CanvasRenderingContext2d, universe: &Universe, dirty: bool) {

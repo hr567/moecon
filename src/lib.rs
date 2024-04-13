@@ -17,5 +17,5 @@ pub fn init() {
         .expect_throw("failed to get inner height")
         .as_f64()
         .unwrap_throw() as usize;
-    render_universe(width / CELL_SIZE, height / CELL_SIZE);
+    render_universe(width / CELL_SIZE, height / CELL_SIZE, 1);
 }
