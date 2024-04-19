@@ -10,6 +10,27 @@ services:
     command: "run -c /run/secrets/v2ray_config.json"
     restart: always
 
+  dnsproxy:
+    container_name: dnsproxy
+    image: adguard/dnsproxy:latest
+    ports:
+      - 53:53/udp
+      - 53:53/tcp
+    command:
+      [
+        "--listen=0.0.0.0",
+        "--listen=::",
+        "--port=53",
+        "--upstream=vps.wolf-monster.ts.net:53",
+        "--fallback=223.5.5.5:53",
+        "--fallback=223.6.6.6:53",
+        "--cache",
+        "--cache-optimistic",
+        "--cache-size=8388608",
+        "--timeout=5s",
+      ]
+    restart: always
+
   caddy:
     container_name: caddy
     image: caddy:alpine
