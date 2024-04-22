@@ -6,7 +6,8 @@ services:
       - "1080:1080"
       - "8080:8080"
     secrets:
-      - v2ray_config.json
+      - source: v2ray_config
+        target: /run/secrets/v2ray_config.json
     command: "run -c /run/secrets/v2ray_config.json"
     restart: always
 
@@ -16,12 +17,16 @@ services:
     ports:
       - 53:53/udp
       - 53:53/tcp
+    configs:
+      - source: dnsproxy_config
+        target: /run/configs/accelerated-domains.china.adguardhome.conf
     command:
       [
         "--listen=0.0.0.0",
         "--listen=::",
         "--port=53",
         "--upstream=vps.wolf-monster.ts.net:53",
+        "--upstream=/run/configs/accelerated-domains.china.adguardhome.conf",
         "--fallback=223.5.5.5:53",
         "--fallback=223.6.6.6:53",
         "--cache",
@@ -47,6 +52,10 @@ volumes:
   caddy_data:
   caddy_config:
 
+configs:
+  dnsproxy_config:
+    file: ../dnsmasq-china-list/accelerated-domains.china.adguardhome.conf
+
 secrets:
-  v2ray_config.json:
+  v2ray_config:
     file: ./v2ray_config.json
