@@ -6,10 +6,11 @@ use js_sys::Date;
 use rand::prelude::*;
 use wasm_bindgen::prelude::*;
 
-pub const CELL_SIZE: usize = 5;
-
 #[wasm_bindgen]
-pub fn render_universe(width: usize, height: usize, frame_per_second: u32) {
+pub fn render_universe(width: usize, height: usize, cell_size: usize, frame_per_second: f64) {
+    assert!(cell_size > 2, "cell_size must be > 2");
+    let width = width / cell_size;
+    let height = height / cell_size;
     let mut universe = Universe::new(width, height);
     universe.rand();
     let window = web_sys::window().unwrap_throw();
@@ -30,8 +31,8 @@ pub fn render_universe(width: usize, height: usize, frame_per_second: u32) {
             canvas.dyn_into().unwrap_throw()
         }
     };
-    canvas.set_width((CELL_SIZE * universe.width()) as u32);
-    canvas.set_height((CELL_SIZE * universe.height()) as u32);
+    canvas.set_width((cell_size * universe.width()) as u32);
+    canvas.set_height((cell_size * universe.height()) as u32);
     // Draw the initial universe without cells
     let context: web_sys::CanvasRenderingContext2d = canvas
         .get_context("2d")
@@ -44,22 +45,22 @@ pub fn render_universe(width: usize, height: usize, frame_per_second: u32) {
     context.fill_rect(
         0.0,
         0.0,
-        (universe.width() * CELL_SIZE) as f64,
-        (universe.height() * CELL_SIZE) as f64,
+        (universe.width() * cell_size) as f64,
+        (universe.height() * cell_size) as f64,
     );
 
     let mut timestamp = Date::now();
     // Draw the cells in initial universe
-    draw_cells(&context, &universe, false);
+    draw_cells(&context, &universe, cell_size, false);
 
     let f = Rc::new(RefCell::new(None));
     let g = f.clone();
 
     *g.borrow_mut() = Some(Closure::new(move || {
         let now = Date::now();
-        timestamp = if now - timestamp > 1000.0 / frame_per_second as f64 {
+        timestamp = if now - timestamp > 1000.0 / frame_per_second {
             universe.tick();
-            draw_cells(&context, &universe, true);
+            draw_cells(&context, &universe, cell_size, true);
             now
         } else {
             timestamp
@@ -86,7 +87,12 @@ impl RequestAnimationFrameClosure for web_sys::Window {
     }
 }
 
-fn draw_cells(context: &web_sys::CanvasRenderingContext2d, universe: &Universe, dirty: bool) {
+fn draw_cells(
+    context: &web_sys::CanvasRenderingContext2d,
+    universe: &Universe,
+    cell_size: usize,
+    dirty: bool,
+) {
     const DEAD_COLOR: &str = "#FFFFFF";
     const ALIVE_COLOR: &str = "#000000";
     for row in 0..universe.height() {
@@ -101,10 +107,10 @@ fn draw_cells(context: &web_sys::CanvasRenderingContext2d, universe: &Universe, 
             };
             context.set_fill_style(&color.into());
             context.fill_rect(
-                (col * CELL_SIZE + 1) as f64,
-                (row * CELL_SIZE + 1) as f64,
-                (CELL_SIZE - 2) as f64,
-                (CELL_SIZE - 2) as f64,
+                (col * cell_size + 1) as f64,
+                (row * cell_size + 1) as f64,
+                (cell_size - 2) as f64,
+                (cell_size - 2) as f64,
             );
         }
     }
