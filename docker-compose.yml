@@ -35,7 +35,7 @@ services:
         "--http3",
         "--tls-crt=/run/secrets/pi.wolf-monster.ts.net.crt",
         "--tls-key=/run/secrets/pi.wolf-monster.ts.net.key",
-        "--upstream=vps.wolf-monster.ts.net:53",
+        "--upstream=dns.wolf-monster.ts.net:53",
         "--upstream=/run/configs/accelerated-domains.china.adguardhome.conf",
         "--fallback=223.5.5.5:53",
         "--fallback=223.6.6.6:53",
