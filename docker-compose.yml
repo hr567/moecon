@@ -33,6 +33,7 @@ services:
         "--port=53",
         "--https-port=443",
         "--http3",
+        "--https-server-name=pi.wolf-monster.ts.net",
         "--tls-crt=/run/secrets/pi.wolf-monster.ts.net.crt",
         "--tls-key=/run/secrets/pi.wolf-monster.ts.net.key",
         "--upstream=dns.wolf-monster.ts.net:53",
@@ -42,7 +43,9 @@ services:
         "--cache",
         "--cache-optimistic",
         "--cache-size=8388608",
-        "--timeout=5s",
+        "--cache-min-ttl=600",
+        "--cache-max-ttl=3600",
+        "--timeout=300ms",
       ]
     restart: always
 
