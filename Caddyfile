@@ -1,6 +1,7 @@
-:443
+pi.wolf-monster.ts.net:443 {
+	reverse_proxy dns-query https://dnsproxy:443
+}
 
-reverse_proxy dns-query https://dnsproxy:443
-
-root * /var/www
-file_server
+:80 {
+	file_server /var/www
+}
