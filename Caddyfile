@@ -1,0 +1,6 @@
+:443
+
+reverse_proxy dns-query https://dnsproxy:443
+
+root * /var/www
+file_server

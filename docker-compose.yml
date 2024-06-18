@@ -33,7 +33,6 @@ services:
         "--port=53",
         "--https-port=443",
         "--http3",
-        "--https-server-name=pi.wolf-monster.ts.net",
         "--tls-crt=/run/secrets/pi.wolf-monster.ts.net.crt",
         "--tls-key=/run/secrets/pi.wolf-monster.ts.net.key",
         "--upstream=dns.wolf-monster.ts.net:53",
@@ -52,13 +51,15 @@ services:
   caddy:
     container_name: caddy
     image: caddy:alpine
+    configs:
+      - Caddyfile
     volumes:
       - caddy_data:/data
       - caddy_config:/config
       - ./:/srv:ro
     ports:
       - "80:80"
-    command: "caddy file-server -r /srv/www"
+    command: "caddy run --config /run/config/Caddyfile"
     restart: always
 
 volumes:
@@ -66,6 +67,8 @@ volumes:
   caddy_config:
 
 configs:
+  Caddyfile:
+    file: ./Caddyfile
   dnsproxy_config:
     file: ../dnsmasq-china-list/accelerated-domains.china.adguardhome.conf
 
