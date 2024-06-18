@@ -49,8 +49,6 @@ services:
   caddy:
     container_name: caddy
     image: caddy:alpine
-    configs:
-      - Caddyfile
     volumes:
       - caddy_data:/data
       - caddy_config:/config
@@ -59,7 +57,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    command: "caddy run --config /run/config/Caddyfile"
+    command: "caddy run --config /srv/Caddyfile"
     restart: always
 
 volumes:
@@ -67,8 +65,6 @@ volumes:
   caddy_config:
 
 configs:
-  Caddyfile:
-    file: ./Caddyfile
   dnsproxy_config:
     file: ../dnsmasq-china-list/accelerated-domains.china.adguardhome.conf
 
