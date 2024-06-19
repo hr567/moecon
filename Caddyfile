@@ -1,5 +1,10 @@
 pi.wolf-monster.ts.net:443 {
-	reverse_proxy dns-query https://dnsproxy:443
+	reverse_proxy /dns-query https://dnsproxy:443 {
+		transport http {
+			tls
+			tls_server_name pi.wolf-monster.ts.net
+		}
+	}
 }
 
 :80 {
